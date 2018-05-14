@@ -13,6 +13,7 @@
     "caniuse-db": "^1.0.30000652",
     "cross-env": "^5.1",
     "highlight.js": "^9.1.0",
+    "hoek": "^5.0.3",
     "laravel-mix": "^2.0",
     "laravel-mix-purgecss": "^2.1.0",
     "postcss": "^5.0.19",
