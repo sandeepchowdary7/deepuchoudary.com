@@ -2,15 +2,39 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Contracts\Repositories\PostsRepositoryContract;
+use Spatie\Sheets\Sheets;
 
-class PostsController extends Controller
+class PostsController
 {
-    public function index(PostsRepositoryContract $postsRepository)
+    public function index(Sheets $sheets)
     {
-        $posts = $postsRepository->all();
+        $posts = $sheets->collection('posts')->all()
+            ->sortByDesc(function ($post) {
+                return $post->date;
+            });
 
-        return view('posts.index', compact('posts'));
+        return view('posts.index', [
+            'posts' => $posts,
+        ]);
+    }
+
+    public function show(string $slug, Sheets $sheets)
+    {
+        $post = $sheets->collection('posts')->all()
+            ->where('slug', $slug)
+            ->first();
+
+        if (!$post) {
+            abort(404);
+        }
+
+        return view('posts.show', [
+            'post' => $post,
+        ]);
+    }
+
+    public function redirectOldPost(string $year, string $slug)
+    {
+        return redirect()->action('PostsController@show', $slug);
     }
 }

@@ -1,16 +1,43 @@
-let mix = require('laravel-mix');
+const mix = require('laravel-mix');
+require('laravel-mix-purgecss');
 
-/*
- |--------------------------------------------------------------------------
- | Mix Asset Management
- |--------------------------------------------------------------------------
- |
- | Mix provides a clean, fluent API for defining some Webpack build steps
- | for your Laravel application. By default, we are compiling the Sass
- | file for the application as well as bundling up all the JS files.
- |
- */
+const browsers = ['>0.25%', 'not ie 11', 'not op_mini all'];
 
-mix.js('resources/assets/js/app.js', 'public/js')
-   .copy('node_modules/sweetalert/dist/sweetalert.min.js', 'public/js/sweetalert.min.js')
-   .sass('resources/assets/sass/app.scss', 'public/css');
+mix
+  .js('resources/assets/js/app.js', 'public/js')
+  .postCss('resources/assets/css/app.css', 'public/css', [
+    require('postcss-easy-import')(),
+    require('tailwindcss')('./tailwind.js'),
+    require('postcss-cssnext')({
+      browsers,
+      features: {
+        rem: false
+      }
+    })
+  ])
+  .options({
+    autoprefixer: false,
+    processCssUrls: false,
+  })
+  .babelConfig({
+    presets: [
+      [
+        'env',
+        {
+          targets: {
+            browsers
+          }
+        }
+      ]
+    ],
+    plugins: ['babel-plugin-syntax-dynamic-import']
+  })
+  .webpackConfig({
+    output: {
+      publicPath: '/',
+      chunkFilename: 'js/[name].js'
+    }
+  })
+  .purgeCss({
+    whitelistPatterns: [/hljs/]
+  });

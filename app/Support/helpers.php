@@ -1,17 +1,21 @@
 <?php
 
-if (! function_exists('number_format_locale')) {
+use Illuminate\Support\HtmlString;
 
-    function number_format_locale(int $number): string
-    {
-        if ($number < 1000000) {
-            $number = number_format($number);
-        } else if ($number < 1000000000) {
-            $number = number_format($number / 1000000, 3) . 'M';
-        } else {
-            $number = number_format($number / 1000000000, 3) . 'B';
-        }
+function inline_mix(string $path): HtmlString
+{
+    $contents = file_get_contents(
+        public_path(mix($path))
+    );
 
-        return $number;
-    }
+    return new HtmlString($contents);
+}
+
+function svg($filename): HtmlString
+{
+    $contents = @file_get_contents(
+        base_path("resources/assets/svg/{$filename}.svg")
+    );
+
+    return new HtmlString($contents);
 }
